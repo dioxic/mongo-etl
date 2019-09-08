@@ -6,6 +6,7 @@ import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import org.bson.BsonDocument;
 import org.bson.BsonString;
+import org.bson.RawBsonDocument;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -19,9 +20,10 @@ public class Runner {
     private MongoCollection<BsonDocument> tgt;
     private InsertManyOptions options;
 
-    public static void main(String[] args) {
+    static RawBsonDocument d;
 
-        if (args.length != 2) {
+    public static void main(String[] args) {
+        if (args.length != 3) {
             throw new IllegalArgumentException("expected 2 arguments: <src namespace> <tgt namespace>");
         }
 

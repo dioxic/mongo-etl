@@ -14,18 +14,26 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.mongodb:mongodb-driver-reactivestreams:1.12.0'
-    implementation 'org.mongodb:mongodb-driver-async:3.11.0'
-    implementation 'org.apache.logging.log4j:log4j-api:2.12.1'
-    implementation 'org.apache.logging.log4j:log4j-core:2.12.1'
-    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.12.1'
-    implementation 'org.apache.commons:commons-lang3:3.9'
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.8'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
-    implementation 'io.projectreactor:reactor-core:3.2.11.RELEASE'
+    annotationProcessor 'info.picocli:picocli-codegen:4.0.3'
+    compile 'org.mongodb:mongodb-driver-reactivestreams:1.12.0'
+    compile 'org.mongodb:mongodb-driver-async:3.11.0'
+    compile 'org.apache.logging.log4j:log4j-api:2.12.1'
+    compile 'org.apache.logging.log4j:log4j-core:2.12.1'
+    compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.12.1'
+    compile 'org.apache.commons:commons-lang3:3.9'
+    compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.8'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
+    compile 'io.projectreactor:reactor-core:3.2.11.RELEASE'
+    compile 'uk.dioxic.mgenerate:mgenerate-core:0.0.4'
+    compile 'info.picocli:picocli:4.0.3'
     testImplementation 'io.projectreactor:reactor-test:3.2.11.RELEASE'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+    testImplementation 'org.assertj:assertj-core:3.11.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.1'
+}
+
+compileJava {
+    options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
 }
 
 test {
@@ -33,5 +41,15 @@ test {
     testLogging {
         events "PASSED", "FAILED", "SKIPPED"
         showStandardStreams = true
+    }
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "org.mongodb.etl.VFReaderOpt3"
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
