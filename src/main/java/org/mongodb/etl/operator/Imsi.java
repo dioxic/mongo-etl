@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 package org.mongodb.etl.operator;
 
 import uk.dioxic.mgenerate.common.Resolvable;
@@ -21,4 +22,9 @@ public class Imsi implements Resolvable<Long> {
         Integer imsiPrefix = prefixes.get(i % prefixes.size());
         return (imsiPrefix * 10000000000L) + i;
     }
+=======
+package org.mongodb.etl;
+
+public class Imsi {
+>>>>>>> master
 }
