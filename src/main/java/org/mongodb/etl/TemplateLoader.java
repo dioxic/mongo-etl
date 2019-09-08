@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import uk.dioxic.mgenerate.core.Template;
+import uk.dioxic.mgenerate.core.operator.OperatorFactory;
 
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
@@ -60,6 +61,7 @@ public class TemplateLoader implements Callable<Integer> {
     public TemplateLoader() {
         options = new InsertManyOptions();
         options.ordered(false);
+//        OperatorFactory.addBuilder(Imsi);
     }
 
     @Override
