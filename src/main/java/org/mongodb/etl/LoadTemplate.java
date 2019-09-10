@@ -7,22 +7,19 @@ import com.mongodb.reactivestreams.client.MongoCollection;
 import org.bson.RawBsonDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import picocli.CommandLine;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import uk.dioxic.mgenerate.core.Template;
-import uk.dioxic.mgenerate.core.operator.OperatorFactory;
 
-import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 import static picocli.CommandLine.Command;
 import static picocli.CommandLine.Option;
 
 @Command(name = "load", description = "loads random documents into a mongo collection based on an mgenerate template")
-public class TemplateLoader implements Callable<Integer> {
+public class LoadTemplate implements Callable<Integer> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -58,7 +55,7 @@ public class TemplateLoader implements Callable<Integer> {
 
     static RawBsonDocument d;
 
-    public TemplateLoader() {
+    LoadTemplate() {
         options = new InsertManyOptions();
         options.ordered(false);
 //        OperatorFactory.addBuilder(Imsi);

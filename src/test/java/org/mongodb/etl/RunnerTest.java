@@ -14,11 +14,11 @@ public class RunnerTest {
     void run() {
         System.out.println("test starting");
 
-        Runner runner = new Runner(uri, "etl.src", "etl.tgt");
-
-        runner.populateTestData(1000000);
-
-        runner.run();
+//        Runner runner = new Runner(uri, "etl.src", "etl.tgt");
+//
+//        runner.populateTestData(1000000);
+//
+//        runner.run();
     }
 
 }
