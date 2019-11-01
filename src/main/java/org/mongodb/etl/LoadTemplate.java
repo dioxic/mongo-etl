@@ -1,10 +1,14 @@
 package org.mongodb.etl;
 
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.model.InsertManyOptions;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import org.bson.RawBsonDocument;
+import org.bson.UuidRepresentation;
+import org.bson.codecs.UuidCodecProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
@@ -12,9 +16,14 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import uk.dioxic.mgenerate.core.Template;
+import uk.dioxic.mgenerate.core.codec.MgenDocumentCodec;
+import uk.dioxic.mgenerate.core.codec.TemplateCodec;
 
+import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 import static picocli.CommandLine.Command;
 import static picocli.CommandLine.Option;
 
@@ -50,10 +59,7 @@ public class LoadTemplate implements Callable<Integer> {
     @Option(names = {"--concurrency"}, description = "reactive flapmap concurrency (default: ${DEFAULT-VALUE})", defaultValue = "3")
     private int concurrency;
 
-    private MongoClient client;
     private InsertManyOptions options;
-
-    static RawBsonDocument d;
 
     LoadTemplate() {
         options = new InsertManyOptions();
@@ -63,8 +69,14 @@ public class LoadTemplate implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        client = MongoClients.create(mongoUri);
-        MongoCollection<RawBsonDocument> mc = client.getDatabase(database).getCollection(collection, RawBsonDocument.class);
+        MongoClientSettings mcs = MongoClientSettings.builder()
+                .codecRegistry(MgenDocumentCodec.getCodecRegistry())
+                .applyConnectionString(new ConnectionString(mongoUri))
+                .build();
+
+        MongoCollection<Template> mc = MongoClients.create(mcs)
+                .getDatabase(database)
+                .getCollection(collection, Template.class);
 
         if (drop) {
             logger.info("dropping collection {}", collection);
@@ -78,7 +90,7 @@ public class LoadTemplate implements Callable<Integer> {
         Flux.range(0, number)
                 .publishOn(s)
                 .map(i -> template)
-                .map(Template::generateOne)
+                //.map(Template::toRawBson)
                 .buffer(batchSize)
                 .flatMap(batch -> mc.insertMany(batch, options), concurrency)
                 .blockLast();
